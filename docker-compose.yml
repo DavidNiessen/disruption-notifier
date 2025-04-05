@@ -6,8 +6,8 @@ services:
     depends_on:
       - selenium
     environment:
-      SELENIUM_URL: http://selenium:4444/wd/hub
-      WEBHOOK_URL: https://discord.com/api/webhooks/xxx/xxx
+      SELENIUM_URL: ${SELENIUM_URL:-http://selenium:4444/wd/hub}
+      WEBHOOK_URL: ${WEBHOOK_URL:-https://discord.com/api/webhooks/xxx/xxx}
 
   selenium:
     image: selenium/standalone-chrome:latest
