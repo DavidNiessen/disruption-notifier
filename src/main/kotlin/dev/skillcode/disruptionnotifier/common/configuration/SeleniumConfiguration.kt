@@ -14,7 +14,7 @@ import java.net.URI
 @Configuration
 class SeleniumConfiguration(
     @Value("\${remote.driver.url}") private val seleniumUrl: String,
-    @Value("\${run.locally}") private val runLocally: Boolean,
+    @Value("\${app.run.locally}") private val runLocally: Boolean,
 ) {
 
     @Bean(destroyMethod = "quit")

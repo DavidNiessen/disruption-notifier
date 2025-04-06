@@ -2,11 +2,16 @@ package dev.skillcode.disruptionnotifier.providers.sbahn
 
 import dev.skillcode.disruptionnotifier.common.util.RichTextUtil
 import dev.skillcode.disruptionnotifier.common.util.RichTextUtilImpl
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.convert.converter.Converter
 import org.springframework.stereotype.Component
 
 @Component
-class DataToFormatedStringConverter :
+class DataToFormatedStringConverter(
+    @Value("\${app.author.name}") private val authorName: String,
+    @Value("\${app.author.url}") private val authorUrl: String,
+    @Value("\${app.repo}") private val repository: String,
+) :
     Converter<List<SBahnDisruptionData>, String> {
 
     override fun convert(source: List<SBahnDisruptionData>): String {
@@ -38,7 +43,9 @@ class DataToFormatedStringConverter :
         richTextUtil.apply {
             newLine()
             subText("built by ")
-            link("https://skillcode.dev", "David Nießen")
+            link(authorUrl, authorName)
+            paragraph(" | ")
+            link(repository, "Source Code")
         }
 
         return richTextUtil.toString()
