@@ -1,7 +1,7 @@
 package dev.skillcode.disruptionnotifier.providers.sbahn
 
 import dev.skillcode.disruptionnotifier.common.dataprocessing.DataProcessor
-import dev.skillcode.disruptionnotifier.common.exception.ElementNotFoundExceptions
+import dev.skillcode.disruptionnotifier.common.exception.ElementsNotFoundException
 import dev.skillcode.disruptionnotifier.common.output.OutputData
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
@@ -24,7 +24,7 @@ class SBahnDataProcessor(private val dataConverter: DataToFormatedStringConverte
         var data = emptyList<SBahnDisruptionData>()
         try {
             data = collectData(driver)
-        } catch (exception: ElementNotFoundExceptions) {
+        } catch (exception: ElementsNotFoundException) {
             logger.warn(exception.message)
         } catch (exception: Exception) {
             logger.error("Failed to process data: ", exception)
@@ -37,18 +37,18 @@ class SBahnDataProcessor(private val dataConverter: DataToFormatedStringConverte
         val headers = driver.findElements(By.className(HEADER_CLASS_NAME))
 
         if (headers.isEmpty()) {
-            throw ElementNotFoundExceptions(HEADER_CLASS_NAME)
+            throw ElementsNotFoundException(HEADER_CLASS_NAME)
         }
 
         val disruptionHeader = findDisruptionHeader(headers)
-            ?: throw ElementNotFoundExceptions("disruption header ($DISRUPTION_HEADER_NAME)")
+            ?: throw ElementsNotFoundException("disruption header ($DISRUPTION_HEADER_NAME)")
 
         val constructionsElement =
-            driver.findElements(By.className(CONSTRUCTIONS_CLASS_NAME))[0] ?: throw ElementNotFoundExceptions(
+            driver.findElements(By.className(CONSTRUCTIONS_CLASS_NAME))[0] ?: throw ElementsNotFoundException(
                 CONSTRUCTIONS_CLASS_NAME
             )
 
-        val announcementElements = findAnnouncementElements(constructionsElement, disruptionHeader)
+        val announcementElements = findAnnouncementElements(constructionsElement)
 
         val dataList = mutableListOf<SBahnDisruptionData>()
 
@@ -65,13 +65,13 @@ class SBahnDataProcessor(private val dataConverter: DataToFormatedStringConverte
     }
 
 
-    private fun findAnnouncementElements(constructionsElement: WebElement, headerElement: WebElement) =
+    private fun findAnnouncementElements(constructionsElement: WebElement) =
         sequence<WebElement> {
             val children = constructionsElement.findAll()
 
             children.forEach {
                 if (it.isHeader() && !it.isDisruptionHeader()) {
-                    return@forEach
+                    return@sequence
                 }
 
                 if (it.isAnnouncementElement()) {
@@ -82,12 +82,12 @@ class SBahnDataProcessor(private val dataConverter: DataToFormatedStringConverte
 
     private fun findDisruptionHeader(headers: List<WebElement>): WebElement? = headers.find {
         val headingElement = it.findElements(By.tagName("h3")).firstOrNull()
-            ?: throw ElementNotFoundExceptions("h3")
+            ?: throw ElementsNotFoundException("h3")
 
         val heading = headingElement.text
 
         if (heading.isNullOrBlank()) {
-            throw ElementNotFoundExceptions("h3")
+            throw ElementsNotFoundException("h3")
         }
 
         return@find heading.lowercase().contains(DISRUPTION_HEADER_NAME)

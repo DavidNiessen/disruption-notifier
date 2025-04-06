@@ -9,9 +9,8 @@ import java.util.concurrent.TimeUnit
 class TaskScheduler(private val providerService: ProviderService) {
 
     @Scheduled(fixedDelay = 5, timeUnit = TimeUnit.MINUTES)
-    private fun init() {
+    private fun run() {
         providerService.scrapeAndProcessAll()
-        println("TICK")
     }
 
 }

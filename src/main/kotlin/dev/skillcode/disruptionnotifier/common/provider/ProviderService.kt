@@ -30,6 +30,7 @@ class ProviderService(
                 val proccesedData = it.dataProcessor.processData(driver)
 
                 if (lastData.trim() != proccesedData.payload.trim()) {
+                    logger.info("writing data: ${proccesedData.payload}")
                     webHookWriter.writeData(proccesedData)
                 }
 
