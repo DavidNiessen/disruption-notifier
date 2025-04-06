@@ -50,13 +50,8 @@ class SBahnDataProcessor(private val dataConverter: DataToFormatedStringConverte
         val dataList = mutableListOf<SBahnDisruptionData>()
 
         announcementElements.forEach {
-            println(":::::::::::::::")
-            println(
-                it.findElements(By.className(ANNOUNCEMENT_HEADING_CLASS_NAME))
-                    .map { el -> el.getAttribute("innerHTML") })
-            println(":::::::::::::::")
             val title = it.findElements(By.className(ANNOUNCEMENT_HEADING_CLASS_NAME))[0]
-                ?.text ?: ""
+                ?.getAttribute("innerHTML") ?: ""
 
             val lines = it.getAttribute("data-lines")?.split(",") ?: emptyList()
 
@@ -69,7 +64,6 @@ class SBahnDataProcessor(private val dataConverter: DataToFormatedStringConverte
 
     private fun findAnnouncementElements(constructionsElement: WebElement) =
         sequence<WebElement> {
-            println(constructionsElement.getAttribute("innerHTML"))
             val children = constructionsElement.findAll()
 
             children.forEach {
