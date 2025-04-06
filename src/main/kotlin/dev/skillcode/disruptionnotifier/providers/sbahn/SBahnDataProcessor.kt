@@ -30,8 +30,12 @@ class SBahnDataProcessor(private val dataConverter: DataToFormatedStringConverte
             logger.error("Failed to process data: ", exception)
         }
 
-        return OutputData(data.isNotEmpty(), dataConverter.convert(data))
+        val filteredData = filterOutEnded(data)
+        return OutputData(filteredData.isNotEmpty(), dataConverter.convert(filteredData))
     }
+
+    private fun filterOutEnded(dataList: List<SBahnDisruptionData>) =
+        dataList.filter { !it.title.lowercase().contains("beendet") }
 
     private fun collectData(driver: WebDriver): List<SBahnDisruptionData> {
         val headers = driver.findElements(By.className(HEADER_CLASS_NAME))
