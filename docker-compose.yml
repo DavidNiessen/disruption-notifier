@@ -6,7 +6,7 @@ services:
     depends_on:
       - selenium
     environment:
-      RUN_LOCALLY: false
+      RUN_LOCALLY: ${RUN_LOCALLY:-false}
       SELENIUM_URL: ${SELENIUM_URL:-http://selenium:4444/wd/hub}
       WEBHOOK_URL: ${WEBHOOK_URL:-https://discord.com/api/webhooks/xxx/xxx}
 
