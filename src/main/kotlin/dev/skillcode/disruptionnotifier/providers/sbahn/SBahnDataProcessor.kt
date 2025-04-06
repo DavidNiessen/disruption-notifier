@@ -51,7 +51,9 @@ class SBahnDataProcessor(private val dataConverter: DataToFormatedStringConverte
 
         announcementElements.forEach {
             println(":::::::::::::::")
-            println(it.findElements(By.className(ANNOUNCEMENT_HEADING_CLASS_NAME)).map { el -> el.text })
+            println(
+                it.findElements(By.className(ANNOUNCEMENT_HEADING_CLASS_NAME))
+                    .map { el -> el.getAttribute("innerHTML") })
             println(":::::::::::::::")
             val title = it.findElements(By.className(ANNOUNCEMENT_HEADING_CLASS_NAME))[0]
                 ?.text ?: ""
