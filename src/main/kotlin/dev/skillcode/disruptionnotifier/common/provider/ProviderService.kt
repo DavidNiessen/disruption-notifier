@@ -27,14 +27,14 @@ class ProviderService(
         providers.forEach {
             try {
                 val driver = webScraperProvider.getObject().scrapePage(it.url)
-                val proccesedData = it.dataProcessor.processData(driver)
+                val processedData = it.dataProcessor.processData(driver)
 
-                if (lastData.trim() != proccesedData.payload.trim()) {
-                    logger.info("writing data: ${proccesedData.payload}")
-                    webHookWriter.writeData(proccesedData)
+                if (lastData.trim() != processedData.payload.trim()) {
+                    logger.info("writing data: ${processedData.payload}")
+                    webHookWriter.writeData(processedData)
                 }
 
-                lastData = proccesedData.payload
+                lastData = processedData.payload
             } catch (exception: Exception) {
                 logger.error("An error occurred:", exception)
             }
