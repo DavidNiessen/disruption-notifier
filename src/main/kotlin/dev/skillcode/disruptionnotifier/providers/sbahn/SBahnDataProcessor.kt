@@ -40,9 +40,6 @@ class SBahnDataProcessor(private val dataConverter: DataToFormatedStringConverte
             throw ElementsNotFoundException(HEADER_CLASS_NAME)
         }
 
-        val disruptionHeader = findDisruptionHeader(headers)
-            ?: throw ElementsNotFoundException("disruption header ($DISRUPTION_HEADER_NAME)")
-
         val constructionsElement =
             driver.findElements(By.className(CONSTRUCTIONS_CLASS_NAME))[0] ?: throw ElementsNotFoundException(
                 CONSTRUCTIONS_CLASS_NAME
@@ -54,7 +51,7 @@ class SBahnDataProcessor(private val dataConverter: DataToFormatedStringConverte
 
         announcementElements.forEach {
             val title = it.findElements(By.className(ANNOUNCEMENT_HEADING_CLASS_NAME))[0]
-                ?.text ?: "null"
+                ?.text ?: ""
 
             val lines = it.getAttribute("data-lines")?.split(",") ?: emptyList()
 

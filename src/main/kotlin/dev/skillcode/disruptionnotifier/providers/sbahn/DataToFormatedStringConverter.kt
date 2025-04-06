@@ -30,8 +30,10 @@ class DataToFormatedStringConverter(
                     disruptionData.lines.joinToString(", ") { it.uppercase() }
                 }
 
+                val title = disruptionData.title.takeIf { it.isNotBlank() } ?: "Keine Überschrift"
+
                 richTextUtil.apply {
-                    bold(disruptionData.title)
+                    bold(title)
                     newLine()
                     paragraph("betroffene Linien > ")
                     indent(lines)
@@ -41,7 +43,6 @@ class DataToFormatedStringConverter(
         }
 
         richTextUtil.apply {
-            newLine()
             subText("built by ")
             link(authorUrl, authorName)
             paragraph(" | ")

@@ -13,13 +13,14 @@ class ProviderService(
     private val webScraperProvider: ObjectProvider<WebScraper>,
     private val sBahnProcessor: SBahnDataProcessor,
     private val webHookWriter: WebHookWriter,
+    private val providerCache: ProviderCache,
 ) {
 
     private val logger = LoggerFactory.getLogger(ProviderService::class.java)
     private val providers = mutableListOf<TransportProvider>()
-    private var lastData = ""
 
     fun registerProvider(provider: TransportProvider) {
+        logger.info("provider registered: ${provider.name} (${provider.url}")
         providers.add(provider)
     }
 
@@ -29,12 +30,12 @@ class ProviderService(
                 val driver = webScraperProvider.getObject().scrapePage(it.url)
                 val processedData = it.dataProcessor.processData(driver)
 
-                if (lastData.trim() != processedData.payload.trim()) {
+                val isInCache = providerCache.isInCache(it, processedData.payload)
+
+                if (!isInCache) {
                     logger.info("writing data: ${processedData.payload}")
                     webHookWriter.writeData(processedData)
                 }
-
-                lastData = processedData.payload
             } catch (exception: Exception) {
                 logger.error("An error occurred:", exception)
             }
@@ -46,7 +47,7 @@ class ProviderService(
     private fun registerProviders() {
         registerProvider(
             TransportProvider(
-                "SBahn Berlin",
+                "sbahn-berlin",
                 "https://sbahn.berlin/fahren/bauen-stoerung/",
                 sBahnProcessor
             )

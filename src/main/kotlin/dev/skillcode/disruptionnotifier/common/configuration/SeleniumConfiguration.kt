@@ -11,10 +11,12 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
 import java.net.URI
+import java.time.Duration
 
 @Configuration
 class SeleniumConfiguration(
     @Value("\${remote.driver.url}") private val seleniumUrl: String,
+    @Value("\${driver.wait.timeout.seconds}") private val timeout: Long,
     @Value("\${app.run.locally}") private val runLocally: Boolean,
 ) {
 
@@ -25,6 +27,7 @@ class SeleniumConfiguration(
     fun webDriver(): WebDriver {
         val options = ChromeOptions().apply {
             addArguments("--headless=new")
+            setImplicitWaitTimeout(Duration.ofSeconds(timeout))
         }
 
         val driver = if (runLocally) {
