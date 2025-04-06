@@ -64,6 +64,7 @@ class SBahnDataProcessor(private val dataConverter: DataToFormatedStringConverte
 
     private fun findAnnouncementElements(constructionsElement: WebElement) =
         sequence<WebElement> {
+            println(constructionsElement.getAttribute("innerHTML"))
             val children = constructionsElement.findAll()
 
             children.forEach {
