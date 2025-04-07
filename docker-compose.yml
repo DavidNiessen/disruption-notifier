@@ -5,8 +5,10 @@ services:
       - selenium
     environment:
       RUN_LOCALLY: ${RUN_LOCALLY:-false}
+      LOG_TO_WEBHOOK: ${LOG_TO_WEBHOOK:-true}
       SELENIUM_URL: ${SELENIUM_URL:-http://selenium:4444/wd/hub}
-      WEBHOOK_URL: ${WEBHOOK_URLS:-https://discord.com/api/webhooks/xxx/xxx}
+      WEBHOOK_URLS: ${WEBHOOK_URLS:-https://discord.com/api/webhooks/xxx/xxx}
+      WEBHOK_LOGGING_URLS: ${WEBHOOK_LOGGING_URLS:-https://discord.com/api/webhooks/xxx/xxx}
 
   selenium:
     image: selenium/standalone-chrome:latest
