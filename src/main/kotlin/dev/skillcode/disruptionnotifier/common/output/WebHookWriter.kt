@@ -1,6 +1,7 @@
 package dev.skillcode.disruptionnotifier.common.output
 
-import org.springframework.beans.factory.annotation.Value
+import dev.skillcode.disruptionnotifier.common.properties.WebHookProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -12,12 +13,9 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 @Component
+@EnableConfigurationProperties(WebHookProperties::class)
 class WebHookWriter(
-    @Value("\${webhook.title}") private val title: String,
-    @Value("\${webhook.avatar}") private val avatar: String,
-    @Value("\${webhook.colors.success}") private val successColor: String,
-    @Value("\${webhook.colors.failure}") private val failureColor: String,
-    @Value("\${webhook.url}") private val url: String,
+    private val webHookProperties: WebHookProperties,
 ) : DataWriter {
 
     override fun writeData(data: OutputData) {
@@ -28,23 +26,25 @@ class WebHookWriter(
             set(HttpHeaders.CONTENT_TYPE, "application/json")
         }
 
-        val entity = HttpEntity<Any>(buildJson(data), headers)
+        webHookProperties.urls.forEach { url ->
+            val entity = HttpEntity<Any>(buildJson(data), headers)
 
-        httpClient.exchange<String>(
-            url,
-            HttpMethod.POST,
-            entity
-        )
+            httpClient.exchange<String>(
+                url,
+                HttpMethod.POST,
+                entity
+            )
+        }
     }
 
     private fun buildJson(data: OutputData): String {
         return """
         {
-            "username": "$title",
-            "avatar_url": "$avatar",
+            "username": "${webHookProperties.title}",
+            "avatar_url": "${webHookProperties.avatar}",
             "embeds": [{
-                "color": "${if (data.success) successColor else failureColor}",
-                "title": "$title",
+                "color": "${if (data.success) webHookProperties.colors.success else webHookProperties.colors.failure}",
+                "title": "${webHookProperties.title}",
                 "description": "${data.payload}",
                 "timestamp": "${
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneOffset.UTC).format(Instant.now())
