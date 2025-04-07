@@ -45,7 +45,7 @@ class WebHookLogger(
 
             richTextUtil.apply {
                 paragraph(message)
-                newLine()
+                newLine(2)
                 subText(clazz.name)
             }
 

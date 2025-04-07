@@ -31,7 +31,7 @@ class WebHookWriter(
             set(HttpHeaders.CONTENT_TYPE, "application/json")
         }
 
-        val json = buildJson(title, avatarUrl, color, title, payload)
+        val json = buildJson(username, avatarUrl, color, title, payload)
         val entity = HttpEntity<Any>(json, headers)
 
         httpClient.exchange<String>(
