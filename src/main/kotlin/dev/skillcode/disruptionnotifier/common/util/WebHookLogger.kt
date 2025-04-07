@@ -26,22 +26,22 @@ class WebHookLogger(
 
     fun info(message: String, clazz: Class<*>) {
         getLogger(clazz).info(message)
-        if (logToWebHook) log(message, colors.log)
+        if (logToWebHook) log(message, colors.log, "info", clazz)
     }
 
     fun warn(message: String, clazz: Class<*>) {
         getLogger(clazz).warn(message)
-        if (logToWebHook) log(message, colors.warn)
+        if (logToWebHook) log(message, colors.warn, "warn", clazz)
     }
 
     fun error(message: String, clazz: Class<*>) {
         getLogger(clazz).error(message)
-        if (logToWebHook) log(message, colors.failure)
+        if (logToWebHook) log(message, colors.failure, "error", clazz)
     }
 
-    private fun log(message: String, color: String) {
+    private fun log(message: String, color: String, level: String, clazz: Class<*>) {
         webHookProperties.logging.urls.forEach {
-            webHookWriter.writeData(it, message, color)
+            webHookWriter.writeData(it, message, color, title = "level=${level} class=${clazz.name}")
         }
     }
 
