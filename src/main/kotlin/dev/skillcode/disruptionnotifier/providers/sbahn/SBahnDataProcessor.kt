@@ -3,6 +3,7 @@ package dev.skillcode.disruptionnotifier.providers.sbahn
 import dev.skillcode.disruptionnotifier.common.dataprocessing.DataProcessor
 import dev.skillcode.disruptionnotifier.common.exception.ElementsNotFoundException
 import dev.skillcode.disruptionnotifier.common.output.OutputData
+import dev.skillcode.disruptionnotifier.common.util.WebHookLogger
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
@@ -16,7 +17,10 @@ private const val ANNOUNCEMENT_HEADING_CLASS_NAME = "o-construction-announcement
 private const val DISRUPTION_HEADER_NAME = "störungen"
 
 @Service
-class SBahnDataProcessor(private val dataConverter: DataToFormatedStringConverter) : DataProcessor {
+class SBahnDataProcessor(
+    private val dataConverter: DataToFormatedStringConverter,
+    private val webHookLogger: WebHookLogger,
+) : DataProcessor {
 
     private val logger = LoggerFactory.getLogger(SBahnDataProcessor::class.java)
 
@@ -25,9 +29,13 @@ class SBahnDataProcessor(private val dataConverter: DataToFormatedStringConverte
         try {
             data = collectData(driver)
         } catch (exception: ElementsNotFoundException) {
-            logger.warn(exception.message)
+            webHookLogger.warn(exception.message ?: "null", javaClass)
         } catch (exception: Exception) {
-            logger.error("Failed to process data: ", exception)
+            webHookLogger.error(
+                "Failed to process data: ${exception.javaClass.name} -> ${exception.message}",
+                javaClass
+            )
+            exception.printStackTrace()
         }
 
         val filteredData = filterOutEnded(data)

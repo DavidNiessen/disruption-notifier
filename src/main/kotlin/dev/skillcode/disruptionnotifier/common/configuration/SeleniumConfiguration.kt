@@ -1,5 +1,6 @@
 package dev.skillcode.disruptionnotifier.common.configuration
 
+import dev.skillcode.disruptionnotifier.common.util.WebHookLogger
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
@@ -18,6 +19,7 @@ class SeleniumConfiguration(
     @Value("\${remote.driver.url}") private val seleniumUrl: String,
     @Value("\${driver.wait.timeout.seconds}") private val timeout: Long,
     @Value("\${app.run.locally}") private val runLocally: Boolean,
+    private val webHookLogger: WebHookLogger,
 ) {
 
     private val logger = LoggerFactory.getLogger(SeleniumConfiguration::class.java)
@@ -31,10 +33,10 @@ class SeleniumConfiguration(
         }
 
         val driver = if (runLocally) {
-            logger.info("Connecting to local web driver")
+            webHookLogger.info("Connecting to local web driver...", javaClass)
             ChromeDriver(options)
         } else {
-            logger.info("Connecting to remote web driver: $seleniumUrl")
+            webHookLogger.info("Connecting to remote web driver: $seleniumUrl", javaClass)
             RemoteWebDriver(URI.create(seleniumUrl).toURL(), options)
         }
 
