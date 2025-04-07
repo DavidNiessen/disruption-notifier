@@ -41,7 +41,15 @@ class WebHookLogger(
 
     private fun log(message: String, color: String, level: String, clazz: Class<*>) {
         webHookProperties.logging.urls.forEach {
-            webHookWriter.writeData(it, message, color, title = "level=${level} class=${clazz.name}")
+            val richTextUtil: RichTextUtil = RichTextUtilImpl()
+
+            richTextUtil.apply {
+                paragraph(message)
+                newLine()
+                subText(clazz.name)
+            }
+
+            webHookWriter.writeData(it, richTextUtil.toString(), color, title = "level=${level}")
         }
     }
 
