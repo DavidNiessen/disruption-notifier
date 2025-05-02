@@ -8,6 +8,9 @@ entire page and support SPAs.
 
 Runs every 5 minutes by default
 
+![screenshot](https://github.com/user-attachments/assets/ac46efeb-f65b-410b-af28-3b58e9432329)
+
+
 ## Data Flow Diagram (Mermaid)
 
 ```mermaid
